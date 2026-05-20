@@ -112,6 +112,18 @@ First boot note:
 docker compose exec -T backend node -e "const db=require('./db'); db.prepare(\"UPDATE settings SET value=? WHERE key='allowed_domains'\").run(JSON.stringify(['example.com','yourcompany.com'])); db.prepare(\"UPDATE settings SET value=? WHERE key='developer_emails'\").run(JSON.stringify(['dev@yourcompany.com'])); console.log('settings updated');"
 ```
 
+### Local Node runtime
+The app is developed and tested on Node 20. The repository includes `.nvmrc` and `.node-version`, and npm runs with `engine-strict=true`.
+
+```bash
+nvm install
+nvm use
+cd backend && npm ci
+cd ../frontend && npm ci
+```
+
+Docker images are already pinned to `node:20-bookworm-slim`, so Docker Compose does not require a host Node install.
+
 ### 8) Configuration (minimal)
 Main runtime files:
 - Root env: [`.env.example`](.env.example)
@@ -284,6 +296,18 @@ Uwaga przy pierwszym starcie:
 ```bash
 docker compose exec -T backend node -e "const db=require('./db'); db.prepare(\"UPDATE settings SET value=? WHERE key='allowed_domains'\").run(JSON.stringify(['example.com','twojafirma.pl'])); db.prepare(\"UPDATE settings SET value=? WHERE key='developer_emails'\").run(JSON.stringify(['dev@twojafirma.pl'])); console.log('settings updated');"
 ```
+
+### Lokalny runtime Node
+Aplikacja jest rozwijana i testowana na Node 20. Repo zawiera `.nvmrc` i `.node-version`, a npm działa z `engine-strict=true`.
+
+```bash
+nvm install
+nvm use
+cd backend && npm ci
+cd ../frontend && npm ci
+```
+
+Obrazy Dockera są już przypięte do `node:20-bookworm-slim`, więc Docker Compose nie wymaga Node zainstalowanego na hoście.
 
 ### 8) Konfiguracja (minimum)
 Główne pliki runtime:
