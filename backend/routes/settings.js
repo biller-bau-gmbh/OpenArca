@@ -10,7 +10,7 @@ const { upload } = require("../middleware/uploads");
 const { enterpriseCheckService } = require("../services/enterpriseCheck");
 const { domainEventsService } = require("../services/domain-events");
 const { outboxWorkerService } = require("../services/outbox-worker");
-const { uploadsDir } = require("../config");
+const { dataDir, sqlitePath, uploadsDir } = require("../config");
 const {
   getSetting,
   getSettingsMap,
@@ -18,6 +18,7 @@ const {
 } = require("../services/settings");
 const { getCapabilities } = require("../services/capabilities");
 const { sendEmail } = require("../services/email");
+const packageJson = require("../package.json");
 
 const router = express.Router();
 
@@ -100,6 +101,84 @@ function buildPrivateSettingsPayload(map) {
     allowed_domains: parseJsonOrFallback(map.allowed_domains || "[]", []),
     developer_emails: parseJsonOrFallback(map.developer_emails || "[]", []),
     ...buildPublicSettingsPayload(map)
+  };
+}
+
+function buildReadinessPayload(map) {
+  const allowedDomains = parseJsonOrFallback(map.allowed_domains || "[]", []);
+  const developerEmails = parseJsonOrFallback(map.developer_emails || "[]", []);
+  const mailProvider = map.mail_provider === "ses" ? "ses" : "smtp";
+  const emailConfigured = mailProvider === "ses"
+    ? Boolean(map.ses_region && map.ses_from && map.ses_access_key_id && map.ses_secret_access_key)
+    : Boolean(map.smtp_host && map.smtp_port && map.smtp_from);
+  const backupScriptPath = path.resolve(__dirname, "..", "..", "scripts", "backup.sh");
+  const restoreScriptPath = path.resolve(__dirname, "..", "..", "scripts", "restore.sh");
+  const appUrlConfigured = Boolean(String(map.app_url || "").trim());
+  const domainsConfigured = allowedDomains.length > 0;
+  const developersConfigured = developerEmails.length > 0;
+  const sqliteExists = fs.existsSync(sqlitePath);
+
+  return {
+    generated_at: new Date().toISOString(),
+    version: packageJson.version,
+    edition: map.edition || "open_core",
+    app: {
+      name: map.app_name || "OpenArca",
+      url: map.app_url || "",
+      configured: appUrlConfigured
+    },
+    access: {
+      allowed_domains_count: allowedDomains.length,
+      developer_emails_count: developerEmails.length,
+      configured: domainsConfigured && developersConfigured
+    },
+    email: {
+      provider: mailProvider,
+      configured: emailConfigured,
+      from: mailProvider === "ses" ? map.ses_from || "" : map.smtp_from || "",
+      host: mailProvider === "ses" ? map.ses_region || "" : map.smtp_host || ""
+    },
+    data: {
+      data_dir: dataDir,
+      sqlite_path: sqlitePath,
+      sqlite_exists: sqliteExists,
+      backup_script_available: fs.existsSync(backupScriptPath),
+      restore_script_available: fs.existsSync(restoreScriptPath),
+      backup_restore_docs: "docs/skills/sqlite-backup-restore.md"
+    },
+    outbox: outboxWorkerService.getStats(),
+    checks: [
+      {
+        key: "app_url",
+        status: appUrlConfigured ? "ready" : "needs_attention",
+        value: map.app_url || ""
+      },
+      {
+        key: "allowed_domains",
+        status: domainsConfigured ? "ready" : "needs_attention",
+        value: allowedDomains.length
+      },
+      {
+        key: "developer_emails",
+        status: developersConfigured ? "ready" : "needs_attention",
+        value: developerEmails.length
+      },
+      {
+        key: "email_provider",
+        status: emailConfigured ? "ready" : "needs_attention",
+        value: mailProvider
+      },
+      {
+        key: "sqlite",
+        status: sqliteExists ? "ready" : "needs_attention",
+        value: sqlitePath
+      },
+      {
+        key: "backup_restore",
+        status: fs.existsSync(backupScriptPath) && fs.existsSync(restoreScriptPath) ? "ready" : "needs_attention",
+        value: "scripts/backup.sh, scripts/restore.sh"
+      }
+    ]
   };
 }
 
@@ -204,6 +283,11 @@ router.get("/events/outbox", validate({ query: outboxQuerySchema }), (req, res, 
 router.get("/", (req, res) => {
   const map = getSettingsMap();
   return res.json(withMaskedPrivateKeys(buildPrivateSettingsPayload(map)));
+});
+
+router.get("/readiness", (req, res) => {
+  const map = getSettingsMap();
+  return res.json(buildReadinessPayload(map));
 });
 
 router.patch("/", writeLimiter, validate({ body: patchSettingsSchema }), (req, res) => {

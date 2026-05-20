@@ -678,6 +678,22 @@ test("ticket templates validate referenced project on create and list", async ()
   assert.equal(listMissingProject.body.error, "project_not_found");
 });
 
+test("settings readiness exposes self-hosting checks for developers", async () => {
+  const readiness = await request
+    .get("/api/settings/readiness")
+    .set("Authorization", `Bearer ${devAuth.token}`);
+
+  assert.equal(readiness.statusCode, 200);
+  assert.equal(readiness.body.edition, "open_core");
+  assert.equal(readiness.body.access.allowed_domains_count, 1);
+  assert.equal(readiness.body.access.developer_emails_count, 1);
+  assert.ok(readiness.body.version);
+  assert.ok(readiness.body.data.sqlite_path);
+  assert.equal(readiness.body.data.backup_script_available, true);
+  assert.equal(readiness.body.data.restore_script_available, true);
+  assert.ok(readiness.body.checks.some((check) => check.key === "backup_restore"));
+});
+
 test("settings support SES provider selection and mask secrets", async () => {
   const patchSettings = await request
     .patch("/api/settings")

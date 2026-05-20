@@ -310,10 +310,32 @@
     "create": "Utwórz"
   },
   "admin": {
+    "tabReadiness": "Gotowość",
     "tabApp": "Aplikacja",
     "tabSmtp": "Email",
     "tabProjects": "Projekty",
     "tabUsers": "Użytkownicy",
+    "readinessTitle": "Gotowość self-hostingu",
+    "readinessHint": "Kontrole wdrożenia core dla URL aplikacji, reguł dostępu, emaila, danych i skryptów backupu.",
+    "refreshReadiness": "Odśwież",
+    "currentVersion": "Aktualna wersja",
+    "edition": "Edycja",
+    "readyChecks": "Gotowe kontrole",
+    "dataDir": "Katalog danych",
+    "sqlitePath": "Ścieżka SQLite",
+    "backupRestore": "Backup i restore",
+    "readinessStatus": {
+      "ready": "Gotowe",
+      "needs_attention": "Wymaga uwagi"
+    },
+    "readinessChecks": {
+      "app_url": "URL aplikacji",
+      "allowed_domains": "Dozwolone domeny",
+      "developer_emails": "Dostęp developerów",
+      "email_provider": "Dostawca email",
+      "sqlite": "Baza SQLite",
+      "backup_restore": "Skrypty backup i restore"
+    },
     "appName": "Nazwa aplikacji",
     "appLogo": "Logo aplikacji",
     "appLogoHint": "Dozwolone formaty: PNG, JPG, WEBP. Rekomendowana szerokość: 240px.",

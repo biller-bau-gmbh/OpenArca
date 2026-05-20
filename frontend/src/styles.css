@@ -2572,6 +2572,67 @@ table th {
   gap: 12px;
 }
 
+.admin-readiness {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-readiness-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.admin-readiness-summary,
+.admin-readiness-grid,
+.admin-readiness-details {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.admin-readiness-summary > div,
+.admin-readiness-details > div,
+.admin-readiness-check {
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  padding: 14px;
+  min-width: 0;
+}
+
+.admin-readiness-summary strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+.admin-readiness-check {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.admin-readiness-check h3 {
+  margin: 0 0 4px;
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.admin-readiness-check .badge {
+  width: fit-content;
+}
+
+.admin-readiness-details code {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
 .admin-project-row {
   display: flex;
   align-items: flex-start;

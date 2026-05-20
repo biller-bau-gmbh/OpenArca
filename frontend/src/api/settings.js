@@ -20,6 +20,11 @@ export async function getEnterpriseCheck() {
   return response.data;
 }
 
+export async function getReadiness() {
+  const response = await client.get("/api/settings/readiness");
+  return response.data;
+}
+
 export async function patchSettings(payload) {
   const response = await client.patch("/api/settings", payload);
   return response.data;

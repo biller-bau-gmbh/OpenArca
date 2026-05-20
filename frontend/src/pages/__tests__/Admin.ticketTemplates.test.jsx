@@ -16,6 +16,7 @@ vi.mock("../../api/projects", () => ({
 }));
 
 vi.mock("../../api/settings", () => ({
+  getReadiness: vi.fn(),
   getSettings: vi.fn(),
   patchSettings: vi.fn(),
   testEmail: vi.fn(),
@@ -62,6 +63,19 @@ describe("Admin ticket templates", () => {
       ses_secret_access_key: "",
       ses_session_token: "",
       ses_endpoint: ""
+    });
+    SettingsApi.getReadiness.mockResolvedValue({
+      version: "0.2.6-rc2",
+      edition: "open_core",
+      data: {
+        data_dir: "/data",
+        sqlite_path: "/data/data.sqlite",
+        backup_restore_docs: "docs/skills/sqlite-backup-restore.md"
+      },
+      checks: [
+        { key: "app_url", status: "ready", value: "http://localhost:3330" },
+        { key: "allowed_domains", status: "ready", value: 1 }
+      ]
     });
 
     ProjectsApi.getProjects.mockResolvedValue([
@@ -165,5 +179,16 @@ describe("Admin ticket templates", () => {
     expect(
       await screen.findByText("admin.templateValidation.description")
     ).toBeInTheDocument();
+  });
+
+  it("shows self-hosting readiness checks", async () => {
+    render(<AdminPage />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "admin.tabReadiness" }));
+
+    expect(await screen.findByText("admin.readinessTitle")).toBeInTheDocument();
+    expect(await screen.findByText("0.2.6-rc2")).toBeInTheDocument();
+    expect(await screen.findByText("admin.readinessChecks.app_url")).toBeInTheDocument();
+    expect(SettingsApi.getReadiness).toHaveBeenCalled();
   });
 });

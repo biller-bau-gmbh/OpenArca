@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Pencil, Plus, RotateCcw, Trash2, X } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Pencil, Plus, RefreshCw, RotateCcw, Trash2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   createProject,
@@ -10,7 +10,7 @@ import {
   uploadProjectIcon
 } from "../api/projects";
 import { API_BASE_URL } from "../api/client";
-import { getSettings, patchSettings, testEmail, uploadAppLogo } from "../api/settings";
+import { getReadiness, getSettings, patchSettings, testEmail, uploadAppLogo } from "../api/settings";
 import {
   createTicketTemplate,
   deleteTicketTemplate,
@@ -22,7 +22,7 @@ import appLogo from "../assets/logo-openarca.png";
 import ProjectBadge from "../components/ProjectBadge";
 import { CATEGORY_OPTIONS, PRIORITY_OPTIONS } from "../utils/constants";
 
-const tabs = ["app", "smtp", "projects", "users"];
+const tabs = ["readiness", "app", "smtp", "projects", "users"];
 const DEFAULT_PROJECT_COLOR = "#6B7280";
 const EMPTY_TEMPLATE_DRAFT = {
   name: "",
@@ -132,6 +132,8 @@ export default function AdminPage() {
 
   const [settings, setSettings] = useState(null);
   const [settingsForm, setSettingsForm] = useState(null);
+  const [readiness, setReadiness] = useState(null);
+  const [readinessLoading, setReadinessLoading] = useState(false);
   const [mailForm, setMailForm] = useState(null);
   const [mailTestTo, setMailTestTo] = useState("");
   const [logoFile, setLogoFile] = useState(null);
@@ -226,6 +228,25 @@ export default function AdminPage() {
     loadAll();
   }, []);
 
+  async function loadReadiness() {
+    setReadinessLoading(true);
+    setError("");
+    try {
+      const readinessData = await getReadiness();
+      setReadiness(readinessData);
+    } catch (readinessError) {
+      setError(parseError(readinessError));
+    } finally {
+      setReadinessLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!loading && activeTab === "readiness" && !readiness && !readinessLoading) {
+      loadReadiness();
+    }
+  }, [activeTab, loading, readiness, readinessLoading]);
+
   const usersSorted = useMemo(() => {
     return [...users].sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
   }, [users]);
@@ -239,6 +260,8 @@ export default function AdminPage() {
     });
   }, [templates]);
   const appLogoPreviewUrl = settings?.app_logo_url ? `${API_BASE_URL}${settings.app_logo_url}` : appLogo;
+  const readinessChecks = Array.isArray(readiness?.checks) ? readiness.checks : [];
+  const readinessReadyCount = readinessChecks.filter((check) => check.status === "ready").length;
 
   async function handleSaveAppSettings(event) {
     event.preventDefault();
@@ -653,6 +676,80 @@ export default function AdminPage() {
       {notice ? <p className="feedback ok">{notice}</p> : null}
 
       {loading ? <article className="card">{t("app.loading")}</article> : null}
+
+      {!loading && activeTab === "readiness" ? (
+        <article className="card admin-readiness">
+          <div className="admin-readiness-header">
+            <div>
+              <h2 className="card-title">{t("admin.readinessTitle")}</h2>
+              <p className="muted">{t("admin.readinessHint")}</p>
+            </div>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={loadReadiness}
+              disabled={readinessLoading}
+            >
+              <RefreshCw size={13} />
+              <span>{t("admin.refreshReadiness")}</span>
+            </button>
+          </div>
+
+          {readinessLoading ? <p className="muted">{t("app.loading")}</p> : null}
+
+          {readiness ? (
+            <>
+              <div className="admin-readiness-summary">
+                <div>
+                  <span className="form-label">{t("admin.currentVersion")}</span>
+                  <strong>{readiness.version || "-"}</strong>
+                </div>
+                <div>
+                  <span className="form-label">{t("admin.edition")}</span>
+                  <strong>{readiness.edition || "open_core"}</strong>
+                </div>
+                <div>
+                  <span className="form-label">{t("admin.readyChecks")}</span>
+                  <strong>{readinessReadyCount}/{readinessChecks.length}</strong>
+                </div>
+              </div>
+
+              <div className="admin-readiness-grid">
+                {readinessChecks.map((check) => {
+                  const isReady = check.status === "ready";
+                  return (
+                    <div key={check.key} className="admin-readiness-check">
+                      <span className={isReady ? "badge badge-verified" : "badge badge-waiting"}>
+                        {isReady ? <CheckCircle2 size={12} /> : <AlertTriangle size={12} />}
+                        {t(`admin.readinessStatus.${check.status}`)}
+                      </span>
+                      <div>
+                        <h3>{t(`admin.readinessChecks.${check.key}`)}</h3>
+                        <p className="muted">{String(check.value || "-")}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="admin-readiness-details">
+                <div>
+                  <span className="form-label">{t("admin.dataDir")}</span>
+                  <code>{readiness.data?.data_dir || "-"}</code>
+                </div>
+                <div>
+                  <span className="form-label">{t("admin.sqlitePath")}</span>
+                  <code>{readiness.data?.sqlite_path || "-"}</code>
+                </div>
+                <div>
+                  <span className="form-label">{t("admin.backupRestore")}</span>
+                  <code>{readiness.data?.backup_restore_docs || "-"}</code>
+                </div>
+              </div>
+            </>
+          ) : null}
+        </article>
+      ) : null}
 
       {!loading && activeTab === "app" && settingsForm ? (
         <article className="card">

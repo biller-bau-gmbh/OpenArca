@@ -310,10 +310,32 @@
     "create": "Create"
   },
   "admin": {
+    "tabReadiness": "Readiness",
     "tabApp": "Application",
     "tabSmtp": "Email",
     "tabProjects": "Projects",
     "tabUsers": "Users",
+    "readinessTitle": "Self-hosting readiness",
+    "readinessHint": "Core deployment checks for application URL, access rules, email, data storage and backup scripts.",
+    "refreshReadiness": "Refresh",
+    "currentVersion": "Current version",
+    "edition": "Edition",
+    "readyChecks": "Ready checks",
+    "dataDir": "Data directory",
+    "sqlitePath": "SQLite path",
+    "backupRestore": "Backup and restore",
+    "readinessStatus": {
+      "ready": "Ready",
+      "needs_attention": "Needs attention"
+    },
+    "readinessChecks": {
+      "app_url": "Application URL",
+      "allowed_domains": "Allowed domains",
+      "developer_emails": "Developer access",
+      "email_provider": "Email provider",
+      "sqlite": "SQLite database",
+      "backup_restore": "Backup and restore scripts"
+    },
     "appName": "App name",
     "appLogo": "Application logo",
     "appLogoHint": "Allowed formats: PNG, JPG, WEBP. Recommended width: 240px.",

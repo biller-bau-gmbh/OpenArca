@@ -7,6 +7,7 @@ All notable changes to this project are documented in this file.
 ### Added
 - Open Core next-plan document for the public roadmap after `0.2.6-rc2`.
 - Automated frontend i18n guard that validates translation key parity and blocks hardcoded Polish runtime copy outside the Polish dictionary.
+- Self-hosting readiness endpoint and Admin tab covering app URL, access rules, email provider, SQLite data path, backup/restore scripts and current version.
 
 ### Changed
 - Frontend runtime storage access now uses a safe wrapper so tests and non-browser environments do not fail on unavailable `localStorage`.
