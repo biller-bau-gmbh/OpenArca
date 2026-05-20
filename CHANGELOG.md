@@ -5,13 +5,16 @@ All notable changes to this project are documented in this file.
 ## [Unreleased]
 
 ### Added
-- -
+- Open Core next-plan document for the public roadmap after `0.2.6-rc2`.
+- Automated frontend i18n guard that validates translation key parity and blocks hardcoded Polish runtime copy outside the Polish dictionary.
 
 ### Changed
-- -
+- Frontend runtime storage access now uses a safe wrapper so tests and non-browser environments do not fail on unavailable `localStorage`.
+- Backend and frontend package metadata now declare the supported Node runtime range as `>=20 <26`.
+- Backend test script now targets test files explicitly for Node's test runner.
 
 ### Fixed
-- -
+- Frontend test setup now provides a memory-backed `localStorage` fallback when jsdom/Node does not expose one.
 
 ### Notes
 - -

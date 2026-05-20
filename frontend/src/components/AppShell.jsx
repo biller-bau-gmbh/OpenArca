@@ -23,6 +23,7 @@ import polandFlag from "../assets/poland.png";
 import unitedStatesFlag from "../assets/united-states.png";
 import { API_BASE_URL } from "../api/client";
 import { getPublicSettings } from "../api/settings";
+import { getStoredValue, setStoredValue } from "../utils/storage";
 import appPackage from "../../package.json";
 import { enterpriseBaseItems, enterpriseNavSections } from "virtual:enterprise-frontend";
 
@@ -45,8 +46,7 @@ const openArcaUrl = "https://www.openarca.com";
 const openArcaLicenseUrl = "https://github.com/visiolab-studio/OpenArca/blob/main/LICENSE";
 
 function resolveInitialTheme() {
-  if (typeof window === "undefined") return "light";
-  const stored = localStorage.getItem(themeStorageKey);
+  const stored = getStoredValue(themeStorageKey, "light");
   return stored === "dark" ? "dark" : "light";
 }
 
@@ -183,7 +183,7 @@ export default function AppShell() {
   function handleToggleTheme() {
     const next = theme === "light" ? "dark" : "light";
     setTheme(next);
-    localStorage.setItem(themeStorageKey, next);
+    setStoredValue(themeStorageKey, next);
     document.documentElement.setAttribute("data-theme", next);
   }
 

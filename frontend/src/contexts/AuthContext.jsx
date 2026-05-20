@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import * as authApi from "../api/auth";
 import { setAuthToken, TOKEN_KEY } from "../api/client";
+import { getStoredValue } from "../utils/storage";
 
 const AuthContext = createContext(null);
 
@@ -10,7 +11,7 @@ function normalizeApiError(error) {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem(TOKEN_KEY));
+  const [token, setToken] = useState(getStoredValue(TOKEN_KEY, null));
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
