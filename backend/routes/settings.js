@@ -182,6 +182,17 @@ function buildReadinessPayload(map) {
   };
 }
 
+function buildEmailTestFailureDetails(settings, error) {
+  const provider = settings.mail_provider === "ses" ? "ses" : "smtp";
+  return {
+    provider,
+    host: provider === "ses" ? settings.ses_region || "" : settings.smtp_host || "",
+    code: error?.code || error?.name || "send_failed",
+    command: error?.command || "",
+    response_code: error?.responseCode || null
+  };
+}
+
 function removeFileIfExists(filePath) {
   if (!filePath) return;
   try {
@@ -404,7 +415,7 @@ router.post("/logo", writeLimiter, upload.single("logo"), (req, res, next) => {
   }
 });
 
-async function handleTestEmail(req, res, next) {
+async function handleTestEmail(req, res) {
   try {
     const subject = "OpenArca email provider test";
     const text = "Email provider test message from OpenArca admin panel.";
@@ -417,7 +428,15 @@ async function handleTestEmail(req, res, next) {
     });
     return res.json({ success: true, ...result });
   } catch (error) {
-    return next(error);
+    const settings = getSettingsMap([
+      "mail_provider",
+      "smtp_host",
+      "ses_region"
+    ]);
+    return res.status(502).json({
+      error: "email_test_failed",
+      details: buildEmailTestFailureDetails(settings, error)
+    });
   }
 }
 

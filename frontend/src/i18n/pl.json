@@ -358,6 +358,11 @@
     "sesFrom": "SES from (zweryfikowany nadawca)",
     "sesEndpoint": "SES endpoint (opcjonalnie)",
     "emailTest": "Test emaila",
+    "emailTestFailure": "Test emaila nie powiódł się",
+    "emailDiagnosticProvider": "Provider",
+    "emailDiagnosticHost": "Host lub region",
+    "emailDiagnosticCode": "Kod błędu",
+    "emailDiagnosticCommand": "Komenda",
     "newProject": "Nowy projekt",
     "projectSettings": "Ustawienia projektu",
     "ticketTemplates": "Szablony zgłoszeń",
@@ -426,6 +431,7 @@
     "external_reference_not_found": "Nie znaleziono referencji zewnętrznej.",
     "ticket_not_available": "Nie możesz powiązać zadania z tym zgłoszeniem.",
     "feature_not_enabled": "Funkcja Enterprise jest wyłączona.",
+    "email_test_failed": "Test emaila nie powiódł się. Sprawdź diagnostykę providera poniżej.",
     "internal_error": "Wystąpił błąd serwera",
     "no_changes": "Brak zmian do zapisania"
   }

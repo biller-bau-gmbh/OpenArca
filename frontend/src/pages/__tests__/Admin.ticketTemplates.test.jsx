@@ -191,4 +191,32 @@ describe("Admin ticket templates", () => {
     expect(await screen.findByText("admin.readinessChecks.app_url")).toBeInTheDocument();
     expect(SettingsApi.getReadiness).toHaveBeenCalled();
   });
+
+  it("shows safe email diagnostics when test email fails", async () => {
+    SettingsApi.testEmail.mockRejectedValueOnce({
+      response: {
+        data: {
+          error: "email_test_failed",
+          details: {
+            provider: "smtp",
+            host: "smtp.example.com",
+            code: "ECONNREFUSED",
+            command: "CONN"
+          }
+        }
+      }
+    });
+
+    render(<AdminPage />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "admin.tabSmtp" }));
+    fireEvent.change(await screen.findByLabelText("admin.smtpTestTo"), {
+      target: { value: "dev@example.com" }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "admin.emailTest" }));
+
+    expect(await screen.findByText("admin.emailTestFailure")).toBeInTheDocument();
+    expect(await screen.findByText("ECONNREFUSED")).toBeInTheDocument();
+    expect(await screen.findByText("smtp.example.com")).toBeInTheDocument();
+  });
 });

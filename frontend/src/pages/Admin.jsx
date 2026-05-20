@@ -136,6 +136,7 @@ export default function AdminPage() {
   const [readinessLoading, setReadinessLoading] = useState(false);
   const [mailForm, setMailForm] = useState(null);
   const [mailTestTo, setMailTestTo] = useState("");
+  const [mailTestDiagnostic, setMailTestDiagnostic] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
   const [isLogoUploading, setIsLogoUploading] = useState(false);
 
@@ -269,6 +270,7 @@ export default function AdminPage() {
 
     setError("");
     setNotice("");
+    setMailTestDiagnostic(null);
 
     try {
       const updated = await patchSettings({
@@ -290,6 +292,7 @@ export default function AdminPage() {
 
     setError("");
     setNotice("");
+    setMailTestDiagnostic(null);
 
     try {
       const payload = {
@@ -359,17 +362,20 @@ export default function AdminPage() {
   async function handleTestMail() {
     if (!mailTestTo.trim()) {
       setError("validation_error");
+      setMailTestDiagnostic(null);
       return;
     }
 
     setError("");
     setNotice("");
+    setMailTestDiagnostic(null);
 
     try {
       const result = await testEmail({ to: mailTestTo.trim() });
       setNotice(result.mode || "saved");
     } catch (testError) {
       setError(parseError(testError));
+      setMailTestDiagnostic(testError?.response?.data?.details || null);
     }
   }
 
@@ -994,6 +1000,30 @@ export default function AdminPage() {
                 {t("admin.emailTest")}
               </button>
             </div>
+
+            {mailTestDiagnostic ? (
+              <div className="admin-email-diagnostic">
+                <strong>{t("admin.emailTestFailure")}</strong>
+                <dl>
+                  <div>
+                    <dt>{t("admin.emailDiagnosticProvider")}</dt>
+                    <dd>{mailTestDiagnostic.provider || "-"}</dd>
+                  </div>
+                  <div>
+                    <dt>{t("admin.emailDiagnosticHost")}</dt>
+                    <dd>{mailTestDiagnostic.host || "-"}</dd>
+                  </div>
+                  <div>
+                    <dt>{t("admin.emailDiagnosticCode")}</dt>
+                    <dd>{mailTestDiagnostic.code || "-"}</dd>
+                  </div>
+                  <div>
+                    <dt>{t("admin.emailDiagnosticCommand")}</dt>
+                    <dd>{mailTestDiagnostic.command || "-"}</dd>
+                  </div>
+                </dl>
+              </div>
+            ) : null}
           </form>
         </article>
       ) : null}

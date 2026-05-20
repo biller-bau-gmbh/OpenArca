@@ -2633,6 +2633,37 @@ table th {
   overflow-wrap: anywhere;
 }
 
+.admin-email-diagnostic {
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  background: #fef2f2;
+  color: #7f1d1d;
+  padding: 14px;
+}
+
+.admin-email-diagnostic dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 12px 0 0;
+}
+
+.admin-email-diagnostic div {
+  min-width: 0;
+}
+
+.admin-email-diagnostic dt {
+  color: #991b1b;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-email-diagnostic dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
 .admin-project-row {
   display: flex;
   align-items: flex-start;

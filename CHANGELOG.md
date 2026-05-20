@@ -13,6 +13,7 @@ All notable changes to this project are documented in this file.
 - Frontend runtime storage access now uses a safe wrapper so tests and non-browser environments do not fail on unavailable `localStorage`.
 - Backend and frontend package metadata now declare the supported Node runtime range as `>=20 <26`.
 - Backend test script now targets test files explicitly for Node's test runner.
+- Admin email provider test failures now return and display safe diagnostics for provider, host/region, error code and command.
 
 ### Fixed
 - Frontend test setup now provides a memory-backed `localStorage` fallback when jsdom/Node does not expose one.

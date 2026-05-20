@@ -358,6 +358,11 @@
     "sesFrom": "SES from (verified sender)",
     "sesEndpoint": "SES endpoint (optional)",
     "emailTest": "Test email",
+    "emailTestFailure": "Email test failed",
+    "emailDiagnosticProvider": "Provider",
+    "emailDiagnosticHost": "Host or region",
+    "emailDiagnosticCode": "Error code",
+    "emailDiagnosticCommand": "Command",
     "newProject": "New project",
     "projectSettings": "Project settings",
     "ticketTemplates": "Ticket templates",
@@ -426,6 +431,7 @@
     "external_reference_not_found": "External reference was not found.",
     "ticket_not_available": "You cannot link a task to this ticket.",
     "feature_not_enabled": "This Enterprise feature is disabled.",
+    "email_test_failed": "Email test failed. Check provider diagnostics below.",
     "internal_error": "Internal server error",
     "no_changes": "No changes to save"
   }
