@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 ## [Unreleased]
 
 ### Added
+- -
+
+### Changed
+- -
+
+### Fixed
+- -
+
+### Notes
+- -
+
+## [0.2.7-rc1] - 2026-05-20
+
+### Added
 - Open Core next-plan document for the public roadmap after `0.2.6-rc2`.
 - Automated frontend i18n guard that validates translation key parity and blocks hardcoded Polish runtime copy outside the Polish dictionary.
 - Self-hosting readiness endpoint and Admin tab covering app URL, access rules, email provider, SQLite data path, backup/restore scripts and current version.
@@ -20,7 +34,7 @@ All notable changes to this project are documented in this file.
 - Frontend test setup now provides a memory-backed `localStorage` fallback when jsdom/Node does not expose one.
 
 ### Notes
-- -
+- Validated on Node `20.20.2`: backend lint/tests, frontend lint/tests/build.
 
 ## [0.2.6-rc2] - 2026-05-20
 
