@@ -73,7 +73,7 @@ That means:
 - Projects and user/role management.
 
 ### Latest Release
-- Latest tag: `v0.2.7-rc1`
+- Latest tag: `v0.2.8-rc1`
 - Release notes and full change history: [`CHANGELOG.md`](CHANGELOG.md)
 
 ### Screenshots
@@ -267,7 +267,7 @@ To znaczy:
 - Zarządzanie projektami i użytkownikami.
 
 ### Ostatnie wydanie
-- Najnowszy tag: `v0.2.7-rc1`
+- Najnowszy tag: `v0.2.8-rc1`
 - Pełna historia zmian i release notes: [`CHANGELOG.md`](CHANGELOG.md)
 
 ### Screenshots
