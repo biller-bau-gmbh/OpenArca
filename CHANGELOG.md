@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 ## [Unreleased]
 
 ### Added
-- -
+- Idempotent demo seed command for local self-hosting evaluation, including sample users, projects, tickets, Kanban states, TODO items, ticket template and telemetry events.
 
 ### Changed
 - -

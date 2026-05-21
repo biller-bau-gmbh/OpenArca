@@ -8,6 +8,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "lint": "eslint . --max-warnings=0 --ignore-pattern data --ignore-pattern uploads --ignore-pattern node_modules",
+    "seed:demo": "node scripts/seed-demo.js",
     "test": "node --test --test-concurrency=1 tests/*.test.js"
   },
   "engines": {

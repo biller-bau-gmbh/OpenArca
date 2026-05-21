@@ -139,6 +139,15 @@ Default local ports:
 Mail delivery:
 - Configure in app settings (`/admin`) via `SMTP` or `AWS SES`.
 
+Demo data:
+- To populate a local environment with sample users, projects, tickets, Kanban states and TODO items, run:
+
+```bash
+docker compose exec -T backend npm run seed:demo
+```
+
+Demo users use the `openarca.demo` domain. OTP codes are still delivered through the configured email provider or Mailpit in Docker Compose.
+
 Useful docs:
 - Release/rollback checklist: [`docs/release-checklist.md`](docs/release-checklist.md)
 
@@ -323,6 +332,15 @@ Domyślne porty lokalne:
 
 Wysyłka maili:
 - Konfiguracja w panelu `/admin` przez `SMTP` lub `AWS SES`.
+
+Dane demo:
+- Aby uzupełnić lokalne środowisko przykładowymi użytkownikami, projektami, zgłoszeniami, stanami Kanban i zadaniami TODO, uruchom:
+
+```bash
+docker compose exec -T backend npm run seed:demo
+```
+
+Użytkownicy demo korzystają z domeny `openarca.demo`. Kody OTP nadal trafiają przez skonfigurowany provider email albo do Mailpit w Docker Compose.
 
 Przydatna dokumentacja:
 - Checklista release/rollback: [`docs/release-checklist.md`](docs/release-checklist.md)
