@@ -219,7 +219,14 @@
       "environment": "Środowisko: minimum 10 znaków",
       "businessGoal": "Cel biznesowy: minimum 30 znaków",
       "questionContext": "Kontekst pytania: minimum 30 znaków"
-    }
+    },
+    "customFields": "Dodatkowe informacje",
+    "customFieldsHint": "Kontekst specyficzny dla tego projektu.",
+    "customFieldChoose": "Wybierz...",
+    "customFieldsEmpty": "Brak dodatkowych informacji.",
+    "customFieldArchived": "Już nie zbierane",
+    "customFieldFilter": "Dodatkowa informacja",
+    "customFieldFilterValue": "Wartość"
   },
   "newTicket": {
     "step1": "Krok 1: Podstawowe",

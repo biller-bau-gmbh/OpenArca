@@ -28,7 +28,9 @@ const listQuerySchema = z
     priority: z.enum(TICKET_PRIORITIES).optional(),
     category: z.enum(TICKET_CATEGORIES).optional(),
     project_id: z.string().uuid().optional(),
-    my: z.enum(["0", "1"]).optional()
+    my: z.enum(["0", "1"]).optional(),
+    custom_field_key: z.string().trim().min(1).max(50).optional(),
+    custom_field_value: z.string().trim().min(1).max(2000).optional()
   })
   .strict();
 

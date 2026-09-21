@@ -219,7 +219,14 @@
       "environment": "Environment: minimum 10 characters",
       "businessGoal": "Business goal: minimum 30 characters",
       "questionContext": "Question context: minimum 30 characters"
-    }
+    },
+    "customFields": "Additional details",
+    "customFieldsHint": "Context specific to this project.",
+    "customFieldChoose": "Choose...",
+    "customFieldsEmpty": "No additional details.",
+    "customFieldArchived": "No longer collected",
+    "customFieldFilter": "Additional detail",
+    "customFieldFilterValue": "Value"
   },
   "newTicket": {
     "step1": "Step 1: Basics",

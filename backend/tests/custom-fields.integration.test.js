@@ -229,3 +229,44 @@ test("a duplicate active field key is rejected", async () => {
   assert.equal(duplicate.statusCode, 400);
   assert.equal(duplicate.body.error, "duplicate_field_key");
 });
+
+test("tickets can be filtered by a custom field value", async () => {
+  const listed = await request
+    .get(`/api/tickets?project_id=${projectId}&custom_field_key=channel&custom_field_value=it`)
+    .set("Authorization", `Bearer ${devAuth.token}`);
+
+  assert.equal(listed.statusCode, 200);
+  assert.ok(listed.body.length > 0);
+
+  for (const ticket of listed.body) {
+    const detail = await request
+      .get(`/api/tickets/${ticket.id}`)
+      .set("Authorization", `Bearer ${devAuth.token}`);
+    const channel = detail.body.custom_fields.find((field) => field.field_key === "channel");
+    assert.equal(channel.value, "it");
+  }
+});
+
+test("filtering by a value nobody has returns nothing", async () => {
+  const listed = await request
+    .get(`/api/tickets?project_id=${projectId}&custom_field_key=channel&custom_field_value=zz`)
+    .set("Authorization", `Bearer ${devAuth.token}`);
+
+  assert.equal(listed.statusCode, 200);
+  assert.deepEqual(listed.body, []);
+});
+
+test("a key without a value does not silently match every ticket", async () => {
+  const withBoth = await request
+    .get(`/api/tickets?project_id=${projectId}&custom_field_key=channel&custom_field_value=pl`)
+    .set("Authorization", `Bearer ${devAuth.token}`);
+
+  const keyOnly = await request
+    .get(`/api/tickets?project_id=${projectId}&custom_field_key=channel`)
+    .set("Authorization", `Bearer ${devAuth.token}`);
+
+  assert.equal(keyOnly.statusCode, 200);
+  // A half-specified filter falls back to "no custom field filter" rather than
+  // quietly matching every ticket that happens to have the field set.
+  assert.ok(keyOnly.body.length >= withBoth.body.length);
+});

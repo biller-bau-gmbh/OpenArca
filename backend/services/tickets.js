@@ -1182,9 +1182,23 @@ function createTicketsService(options = {}) {
         params.push(query.project_id);
       }
 
+      // Both halves are required: a key without a value would match every ticket
+      // that has the field set, which is not what "filter by value" means.
+      if (query?.custom_field_key && query?.custom_field_value) {
+        filters.push(
+          `EXISTS (
+            SELECT 1
+            FROM ticket_custom_field_values v
+            JOIN project_custom_fields f ON f.id = v.field_id
+            WHERE v.ticket_id = t.id AND f.field_key = ? AND v.value = ?
+          )`
+        );
+        params.push(query.custom_field_key, query.custom_field_value);
+      }
+
       const where = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
 
-      return database
+      const rows = database
         .prepare(
           `SELECT
             t.id,
@@ -1218,6 +1232,34 @@ function createTicketsService(options = {}) {
               ? `/api/projects/${row.project_id}/icon?v=${encodeURIComponent(row.project_icon_updated_at || "1")}`
               : null
         }));
+
+      if (rows.length === 0) {
+        return rows;
+      }
+
+      // One grouped query for the whole page rather than a lookup per row: the
+      // list is capped at 500, and an N+1 here would be felt immediately.
+      const placeholders = rows.map(() => "?").join(", ");
+      const valueRows = database
+        .prepare(
+          `SELECT v.ticket_id, f.field_key, v.value
+           FROM ticket_custom_field_values v
+           JOIN project_custom_fields f ON f.id = v.field_id
+           WHERE v.ticket_id IN (${placeholders})`
+        )
+        .all(...rows.map((row) => row.id));
+
+      const valuesByTicket = new Map();
+      for (const valueRow of valueRows) {
+        const bucket = valuesByTicket.get(valueRow.ticket_id) || {};
+        bucket[valueRow.field_key] = valueRow.value;
+        valuesByTicket.set(valueRow.ticket_id, bucket);
+      }
+
+      return rows.map((row) => ({
+        ...row,
+        custom_fields: valuesByTicket.get(row.id) || {}
+      }));
     },
 
     getBoard() {
