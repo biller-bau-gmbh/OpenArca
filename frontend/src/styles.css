@@ -3256,3 +3256,74 @@ table th {
     align-items: start;
   }
 }
+
+/* Extension layer stack in the admin readiness view. Reads bottom-to-top, the
+   same direction layers load, so the visual order matches the mental model. */
+.admin-readiness-layers {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-readiness-layers-header h3 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.admin-readiness-layers-header p {
+  margin: 4px 0 0;
+}
+
+.admin-layer-stack {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-layer {
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  padding: 12px 14px;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.admin-layer-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-layer-head code {
+  font-size: 12px;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+.admin-layer p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.admin-layer-warning {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--warning, #b45309);
+}
+
+.admin-layer-warnings ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+}
+
+.admin-layer-warnings li {
+  font-size: 13px;
+}

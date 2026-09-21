@@ -334,7 +334,8 @@
       "developer_emails": "Dostęp developerów",
       "email_provider": "Dostawca email",
       "sqlite": "Baza SQLite",
-      "backup_restore": "Skrypty backup i restore"
+      "backup_restore": "Skrypty backup i restore",
+      "extension_layers": "Warstwy rozszerzeń"
     },
     "appName": "Nazwa aplikacji",
     "appLogo": "Logo aplikacji",
@@ -395,7 +396,13 @@
     "role": "Rola",
     "created": "Utworzono",
     "lastLogin": "Ostatnie logowanie",
-    "action": "Akcja"
+    "action": "Akcja",
+    "extensionLayers": "Warstwy rozszerzeń",
+    "extensionLayersHint": "Warstwy ładują się od dołu do góry. Każda nadbudowuje te pod sobą.",
+    "layerSeams": "Wnosi",
+    "layerRequires": "Wymaga",
+    "layerNoSeams": "Wczytana, ale nic nie wnosi — sprawdź ścieżki plików wejściowych.",
+    "layerWarnings": "Ostrzeżenia konfiguracji"
   },
   "status": {
     "submitted": "Zgłoszone",

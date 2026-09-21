@@ -18,6 +18,7 @@ const {
 } = require("../services/settings");
 const { getCapabilities } = require("../services/capabilities");
 const { sendEmail } = require("../services/email");
+const { getLayerDiagnostics } = require("../core/layer-diagnostics");
 const packageJson = require("../package.json");
 
 const router = express.Router();
@@ -118,6 +119,8 @@ function buildReadinessPayload(map) {
   const developersConfigured = developerEmails.length > 0;
   const sqliteExists = fs.existsSync(sqlitePath);
 
+  const layerDiagnostics = getLayerDiagnostics();
+
   return {
     generated_at: new Date().toISOString(),
     version: packageJson.version,
@@ -147,6 +150,7 @@ function buildReadinessPayload(map) {
       backup_restore_docs: "docs/skills/sqlite-backup-restore.md"
     },
     outbox: outboxWorkerService.getStats(),
+    extensions: layerDiagnostics,
     checks: [
       {
         key: "app_url",
@@ -172,6 +176,11 @@ function buildReadinessPayload(map) {
         key: "sqlite",
         status: sqliteExists ? "ready" : "needs_attention",
         value: sqlitePath
+      },
+      {
+        key: "extension_layers",
+        status: layerDiagnostics.status,
+        value: layerDiagnostics.layers.map((layer) => layer.name).join(" > ")
       },
       {
         key: "backup_restore",

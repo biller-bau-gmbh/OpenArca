@@ -334,7 +334,8 @@
       "developer_emails": "Developer access",
       "email_provider": "Email provider",
       "sqlite": "SQLite database",
-      "backup_restore": "Backup and restore scripts"
+      "backup_restore": "Backup and restore scripts",
+      "extension_layers": "Extension layers"
     },
     "appName": "App name",
     "appLogo": "Application logo",
@@ -395,7 +396,13 @@
     "role": "Role",
     "created": "Created",
     "lastLogin": "Last login",
-    "action": "Action"
+    "action": "Action",
+    "extensionLayers": "Extension layers",
+    "extensionLayersHint": "Layers load bottom to top. Each one builds on the layers below it.",
+    "layerSeams": "Contributes",
+    "layerRequires": "Requires",
+    "layerNoSeams": "Loaded, but contributes nothing — check the entry file paths.",
+    "layerWarnings": "Configuration warnings"
   },
   "status": {
     "submitted": "Submitted",
