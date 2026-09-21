@@ -23,9 +23,16 @@ const { notFound, errorHandler } = require("./middleware/error-handler");
 const { sendEmail } = require("./services/email");
 const { getService } = require("./core/extension-registry");
 const { registerRoutesExtensions } = require("./core/routes-extension-loader");
+const { installLayerSchemas } = require("./core/schema-installer");
 
 fs.mkdirSync(dataDir, { recursive: true });
 fs.mkdirSync(uploadsDir, { recursive: true });
+
+// Core tables exist by now (require("./db") ran the core migration). Layer
+// schemas install lowest-first, and before any route registrar: registrars run
+// in reverse layer order, so a higher layer's routes can execute first and must
+// still find the lower layer's tables in place.
+installLayerSchemas(db);
 
 const app = express();
 
