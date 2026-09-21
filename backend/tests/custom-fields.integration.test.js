@@ -270,3 +270,49 @@ test("a key without a value does not silently match every ticket", async () => {
   // quietly matching every ticket that happens to have the field set.
   assert.ok(keyOnly.body.length >= withBoth.body.length);
 });
+
+test("an archived field cannot come back as a different type", async () => {
+  // The attack this closes: a text field accepts "javascript:alert(1)" from a
+  // standard user; a developer later archives it and re-creates the same key as
+  // a url field; the old value then renders as an href on the ticket page.
+  const created = await defineField({
+    field_key: "reference_note",
+    label: "Reference note",
+    field_type: "text"
+  });
+  assert.equal(created.statusCode, 201);
+
+  const ticket = await request
+    .post("/api/tickets")
+    .set("Authorization", `Bearer ${userAuth.token}`)
+    .send(
+      makeBugPayload({
+        project_id: projectId,
+        custom_fields: { channel: "pl", reference_note: "javascript:alert(1)" }
+      })
+    );
+  assert.equal(ticket.statusCode, 201);
+
+  const archived = await request
+    .delete(`/api/projects/${projectId}/custom-fields/${created.body.id}`)
+    .set("Authorization", `Bearer ${devAuth.token}`);
+  assert.equal(archived.statusCode, 204);
+
+  const revivedAsUrl = await defineField({
+    field_key: "reference_note",
+    label: "Reference link",
+    field_type: "url"
+  });
+
+  assert.equal(revivedAsUrl.statusCode, 400);
+  assert.equal(revivedAsUrl.body.error, "field_type_change_forbidden");
+
+  // Reviving with the original type stays allowed.
+  const revivedAsText = await defineField({
+    field_key: "reference_note",
+    label: "Reference note",
+    field_type: "text"
+  });
+  assert.equal(revivedAsText.statusCode, 201);
+  assert.equal(revivedAsText.body.field_type, "text");
+});

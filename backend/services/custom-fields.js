@@ -73,7 +73,7 @@ function createCustomFieldsService(options = {}) {
     }
 
     const existing = db
-      .prepare("SELECT id, archived_at FROM project_custom_fields WHERE project_id = ? AND field_key = ?")
+      .prepare("SELECT id, archived_at, field_type FROM project_custom_fields WHERE project_id = ? AND field_key = ?")
       .get(projectId, payload.field_key);
 
     if (existing) {
@@ -85,7 +85,17 @@ function createCustomFieldsService(options = {}) {
         );
       }
       // Reviving an archived key keeps its historical values attached, which is
-      // the whole reason archiving exists.
+      // the whole reason archiving exists — and is exactly why the type may not
+      // change. Values stored under the old type were validated under the old
+      // type: a text field holding "javascript:alert(1)" would become a url
+      // field rendering it as an href.
+      if (existing.field_type !== payload.field_type) {
+        throw new CustomFieldError(
+          "field_type_change_forbidden",
+          `Field "${payload.field_key}" already exists as ${existing.field_type} and holds values validated as ${existing.field_type}. Use a new field key instead.`,
+          payload.field_key
+        );
+      }
       db.prepare(
         `UPDATE project_custom_fields
          SET label = ?, field_type = ?, required = ?, options = ?, position = ?, archived_at = NULL

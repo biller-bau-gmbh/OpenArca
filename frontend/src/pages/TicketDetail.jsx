@@ -30,6 +30,18 @@ function toInitial(value) {
   return source ? source[0].toUpperCase() : "U";
 }
 
+// Defence in depth. The server restricts url fields to http(s) at write time,
+// but a value stored while the field had a different type predates that check,
+// so never trust a stored value as an href — render it as text instead.
+function isSafeHttpUrl(value) {
+  try {
+    const parsed = new URL(String(value));
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export default function TicketDetailPage() {
   const { id } = useParams();
   const { t } = useTranslation();
@@ -829,7 +841,7 @@ export default function TicketDetailPage() {
                       ) : null}
                     </dt>
                     <dd>
-                      {field.field_type === "url" ? (
+                      {field.field_type === "url" && isSafeHttpUrl(field.value) ? (
                         <a href={field.value} target="_blank" rel="noopener noreferrer">
                           {field.value}
                         </a>
