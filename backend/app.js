@@ -77,18 +77,10 @@ app.get("/health", (req, res) => {
   });
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/tickets", ticketRoutes);
-app.use("/api/dev-tasks", devTaskRoutes);
-app.use("/api/projects", projectRoutes);
-app.use("/api/ticket-templates", ticketTemplateRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/settings", settingsRoutes);
-
-// Unauthenticated by design. Mounted last among core routes so nothing above it
-// can be reached without a session by accident.
-app.use("/api/public", publicRoutes);
-
+// BEFORE core's own routes, so the layer ordering means what the contract says:
+// registrars run topmost-layer-first, then core, and Express matches
+// first-registered-wins. Mounting core first would have made a layer unable to
+// override any core route — only to add new ones.
 registerRoutesExtensions(app, {
   context: {
     express,
@@ -106,6 +98,20 @@ registerRoutesExtensions(app, {
     }
   }
 });
+
+app.use("/api/auth", authRoutes);
+app.use("/api/tickets", ticketRoutes);
+app.use("/api/dev-tasks", devTaskRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/ticket-templates", ticketTemplateRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/settings", settingsRoutes);
+
+// Unauthenticated by design. Mounted last among core routes so nothing above it
+// can be reached without a session by accident.
+app.use("/api/public", publicRoutes);
+
+
 
 app.get("/api/uploads/:filename", authRequired, (req, res) => {
   const filename = String(req.params.filename || "");

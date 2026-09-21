@@ -41,8 +41,23 @@ export default function PublicIntakePage() {
 
     async function load() {
       try {
-        const response = await client.get(`/api/public/projects/${projectId}`);
-        if (active) setProject(response.data);
+        // Without an id in the URL the portal is resolved from the host. Core
+        // has no such mapping; a layer may provide one, and when none does this
+        // simply reports the form as unavailable.
+        const response = projectId
+          ? await client.get(`/api/public/projects/${projectId}`)
+          : await client.get("/api/public/portal");
+
+        if (!active) return;
+
+        const data = response.data;
+        if (!projectId && data.project_id) {
+          const details = await client.get(`/api/public/projects/${data.project_id}`);
+          setProject({ ...details.data, ...data, id: data.project_id });
+          return;
+        }
+
+        setProject(data);
       } catch {
         // A disabled project and a missing one answer identically by design, so
         // there is nothing more specific to say here.
@@ -82,7 +97,7 @@ export default function PublicIntakePage() {
       );
 
       const response = await client.post("/api/public/intake", {
-        project_id: projectId,
+        project_id: project.id,
         email: form.email.trim(),
         ...(form.name.trim() ? { name: form.name.trim() } : {}),
         title: form.title.trim(),
@@ -135,8 +150,8 @@ export default function PublicIntakePage() {
   return (
     <main className="public-page">
       <article className="card public-card">
-        <h1 className="card-title">{t("public.title")}</h1>
-        <p className="muted">{project ? project.name : t("app.loading")}</p>
+        <h1 className="card-title">{project?.title || t("public.title")}</h1>
+        <p className="muted">{project ? project.intro || project.name : t("app.loading")}</p>
 
         <form className="form-grid" onSubmit={handleSubmit} noValidate>
           <label className="form-group">

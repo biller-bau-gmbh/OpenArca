@@ -67,6 +67,7 @@ export default function App() {
       {/* Outside ProtectedRoute and outside AppShell: the visitor has no
           account and may never get one. */}
       <Route path="/report/:projectId" element={<PublicIntakePage />} />
+      <Route path="/report" element={<PublicIntakePage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>

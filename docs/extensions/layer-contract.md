@@ -85,7 +85,9 @@ The previously hardcoded allowlist (`ticketService`, `workflowService`, `taskSyn
 
 Express matches routes **first-registered-wins**. Registering layers in forward order would therefore mean a lower layer permanently shadows any attempt by a higher layer to replace one of its routes — the opposite of what stacking should mean.
 
-Route registrars are therefore invoked in **reverse layer order**: topmost layer first, core's own routes last. The topmost layer wins any path conflict, which is the behaviour the layer ordering already implies everywhere else.
+Route registrars are therefore invoked in **reverse layer order**: topmost layer first, core's own routes last.
+
+This ordering is load-bearing, and it constrains the application's own startup: core must invoke the registrars **before** mounting its own routes. Mounting core's routes first would leave a layer able only to add paths, never to intercept one — and intercepting is the point. A layer that screens a core endpoint and then calls `next()` hands the request on to core unchanged, which is how a capability can wrap a core feature instead of reimplementing it. The topmost layer wins any path conflict, which is the behaviour the layer ordering already implies everywhere else.
 
 Middleware does not want that direction. Cross-cutting middleware should wrap in forward order, so that a lower layer's concern encloses the higher layer's handlers. Layers therefore export two optional functions:
 
