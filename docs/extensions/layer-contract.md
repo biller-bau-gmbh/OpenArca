@@ -26,6 +26,7 @@ EXTENSIONS_LAYERS=../OpenArca-Enterprise,../openarca-edudoro
 ```
 
 - Comma-separated layer roots, absolute or relative. **Relative paths resolve against the repository root** — the directory containing `backend/` and `frontend/` — so that one value means the same thing to the backend process and to Vite. The legacy single-slot variables keep resolving against `backend/`, as they always did; this is the one place where the two conventions differ, and it is why mixing them is warned about rather than silently honoured.
+- Relative entries are for running the app on a host. The containers mount only `backend/` and `frontend/`, so inside them the repository root is not the repository: **containerized deployments mount each layer and use its absolute in-container path**, as the Enterprise override already does.
 - **Order is ascending: lowest layer first.** The rightmost entry is the topmost layer and wins conflicts.
 - Empty or unset means core-only.
 - A configured path that does not exist is a **boot failure**, not a silent skip. A typo in a layer path must not present as "the feature mysteriously isn't there".
