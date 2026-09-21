@@ -54,9 +54,12 @@ const EXTENSIONS_ROUTES_FILE = toAbsolutePath(
 // Resolved at require time so a bad layer configuration aborts the boot instead
 // of surfacing later as a seam that quietly did nothing.
 // See docs/extensions/layer-contract.md.
+// Relative layer roots resolve against the REPOSITORY root, not backend/, so the
+// same EXTENSIONS_LAYERS value means the same thing to the backend and to Vite.
+// Legacy single-slot vars keep resolving against backend/ as they always did.
 const { layers: EXTENSION_LAYERS, warnings: EXTENSION_LAYER_WARNINGS } = resolveLayers({
   env: process.env,
-  rootDir: ROOT_DIR,
+  rootDir: path.resolve(ROOT_DIR, ".."),
   defaults: { extensionsDir: EXTENSIONS_DIR }
 });
 

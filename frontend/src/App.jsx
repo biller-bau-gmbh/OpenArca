@@ -18,7 +18,7 @@ import BoardPage from "./pages/Board";
 import DevTodoPage from "./pages/DevTodo";
 import AdminPage from "./pages/Admin";
 import NotFoundPage from "./pages/NotFound";
-import { enterpriseRoutes } from "virtual:enterprise-frontend";
+import { enterpriseRoutes } from "virtual:openarca-extensions";
 
 function LoginRoute() {
   const { ready, isAuthenticated } = useAuth();

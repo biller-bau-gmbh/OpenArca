@@ -29,7 +29,7 @@ vi.mock("react-i18next", () => ({
   })
 }));
 
-vi.mock("virtual:enterprise-frontend", () => ({
+vi.mock("virtual:openarca-extensions", () => ({
   enterpriseBaseItems: [
     {
       to: "/quick-support",

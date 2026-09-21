@@ -25,7 +25,7 @@ import { API_BASE_URL } from "../api/client";
 import { getPublicSettings } from "../api/settings";
 import { getStoredValue, setStoredValue } from "../utils/storage";
 import appPackage from "../../package.json";
-import { enterpriseBaseItems, enterpriseNavSections } from "virtual:enterprise-frontend";
+import { enterpriseBaseItems, enterpriseNavSections } from "virtual:openarca-extensions";
 
 const themeStorageKey = "taskflow-theme";
 
