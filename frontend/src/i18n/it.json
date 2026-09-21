@@ -448,5 +448,23 @@
     "email_test_failed": "Prova email non riuscita. Controlla la diagnostica del provider qui sotto.",
     "internal_error": "Errore interno del server",
     "no_changes": "Nessuna modifica da salvare"
+  },
+  "public": {
+    "title": "Segnala un problema",
+    "email": "Il tuo indirizzo email",
+    "name": "Nome e cognome (facoltativo)",
+    "subject": "Oggetto",
+    "description": "Che cosa è successo?",
+    "descriptionHint": "Descrivi che cosa hai fatto, che cosa ti aspettavi e che cosa è successo invece.",
+    "submit": "Invia segnalazione",
+    "successTitle": "Segnalazione ricevuta",
+    "successHint": "Conserva questo riferimento. Risponderemo all'indirizzo che hai indicato.",
+    "unavailableTitle": "Questo modulo non è disponibile",
+    "unavailableHint": "Il link potrebbe non essere più valido. Verificalo con chi te lo ha inviato.",
+    "errorEmail": "Inserisci un indirizzo email valido.",
+    "errorTitle": "L'oggetto è troppo breve.",
+    "errorDescription": "Descrivi il problema in modo un po' più dettagliato.",
+    "errorTooMany": "Troppe segnalazioni da qui. Riprova più tardi.",
+    "errorGeneric": "Non è stato possibile inviare la segnalazione. Riprova."
   }
 }

@@ -448,5 +448,23 @@
     "email_test_failed": "Email test failed. Check provider diagnostics below.",
     "internal_error": "Internal server error",
     "no_changes": "No changes to save"
+  },
+  "public": {
+    "title": "Report a problem",
+    "email": "Your email address",
+    "name": "Your name (optional)",
+    "subject": "Subject",
+    "description": "What happened?",
+    "descriptionHint": "Describe what you did, what you expected and what happened instead.",
+    "submit": "Send report",
+    "successTitle": "Report received",
+    "successHint": "Keep this reference. We will reply to the address you gave.",
+    "unavailableTitle": "This form is not available",
+    "unavailableHint": "The link may be out of date. Please check it with whoever gave it to you.",
+    "errorEmail": "Enter a valid email address.",
+    "errorTitle": "The subject is too short.",
+    "errorDescription": "Please describe the problem in a little more detail.",
+    "errorTooMany": "Too many reports from here. Please try again later.",
+    "errorGeneric": "The report could not be sent. Please try again."
   }
 }

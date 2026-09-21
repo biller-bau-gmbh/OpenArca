@@ -448,5 +448,23 @@
     "email_test_failed": "Test emaila nie powiódł się. Sprawdź diagnostykę providera poniżej.",
     "internal_error": "Wystąpił błąd serwera",
     "no_changes": "Brak zmian do zapisania"
+  },
+  "public": {
+    "title": "Zgłoś problem",
+    "email": "Twój adres e-mail",
+    "name": "Imię i nazwisko (opcjonalnie)",
+    "subject": "Temat",
+    "description": "Co się stało?",
+    "descriptionHint": "Opisz, co robiłaś lub robiłeś, czego oczekiwałaś lub oczekiwałeś i co stało się zamiast tego.",
+    "submit": "Wyślij zgłoszenie",
+    "successTitle": "Zgłoszenie przyjęte",
+    "successHint": "Zachowaj ten numer. Odpowiemy na podany adres.",
+    "unavailableTitle": "Ten formularz jest niedostępny",
+    "unavailableHint": "Link może być nieaktualny. Sprawdź go u osoby, która Ci go przekazała.",
+    "errorEmail": "Podaj poprawny adres e-mail.",
+    "errorTitle": "Temat jest za krótki.",
+    "errorDescription": "Opisz problem nieco dokładniej.",
+    "errorTooMany": "Zbyt wiele zgłoszeń z tego miejsca. Spróbuj później.",
+    "errorGeneric": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie."
   }
 }
