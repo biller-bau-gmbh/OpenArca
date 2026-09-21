@@ -278,6 +278,7 @@ function initDb() {
       ).run();
     }
 
+
     const commentColumns = db.prepare("PRAGMA table_info(comments)").all();
     const commentColumnNames = new Set(commentColumns.map((column) => String(column.name)));
 
@@ -287,6 +288,15 @@ function initDb() {
 
     const projectColumns = db.prepare("PRAGMA table_info(projects)").all();
     const projectColumnNames = new Set(projectColumns.map((column) => String(column.name)));
+
+    // Public intake is opt-in PER PROJECT and off by default. Anonymous writes
+    // are a different threat model from the rest of the product, so no existing
+    // deployment gains them by upgrading.
+    if (!projectColumnNames.has("public_intake_enabled")) {
+      db.prepare(
+        "ALTER TABLE projects ADD COLUMN public_intake_enabled INTEGER NOT NULL DEFAULT 0"
+      ).run();
+    }
 
     if (!projectColumnNames.has("icon_filename")) {
       db.prepare("ALTER TABLE projects ADD COLUMN icon_filename TEXT").run();

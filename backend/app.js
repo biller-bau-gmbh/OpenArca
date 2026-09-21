@@ -15,6 +15,7 @@ const projectRoutes = require("./routes/projects");
 const ticketTemplateRoutes = require("./routes/ticketTemplates");
 const userRoutes = require("./routes/users");
 const settingsRoutes = require("./routes/settings");
+const publicRoutes = require("./routes/public");
 const { authRequired } = require("./middleware/auth");
 const { requireRole } = require("./middleware/auth");
 const { requireFeature } = require("./middleware/features");
@@ -83,6 +84,10 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/ticket-templates", ticketTemplateRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/settings", settingsRoutes);
+
+// Unauthenticated by design. Mounted last among core routes so nothing above it
+// can be reached without a session by accident.
+app.use("/api/public", publicRoutes);
 
 registerRoutesExtensions(app, {
   context: {

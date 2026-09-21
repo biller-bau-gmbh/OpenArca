@@ -33,6 +33,7 @@ const createCustomFieldSchema = z
   .strict();
 const createProjectSchema = z
   .object({
+    public_intake_enabled: z.boolean().optional(),
     name: z.string().trim().min(2).max(120),
     description: z.string().trim().max(2000).optional().nullable(),
     color: z.string().trim().regex(/^#[0-9A-Fa-f]{6}$/).optional()
