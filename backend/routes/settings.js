@@ -10,6 +10,7 @@ const { upload } = require("../middleware/uploads");
 const { enterpriseCheckService } = require("../services/enterpriseCheck");
 const { domainEventsService } = require("../services/domain-events");
 const { outboxWorkerService } = require("../services/outbox-worker");
+const db = require("../db");
 const { dataDir, sqlitePath, uploadsDir } = require("../config");
 const {
   getSetting,
@@ -19,6 +20,7 @@ const {
 const { getCapabilities } = require("../services/capabilities");
 const { sendEmail } = require("../services/email");
 const { getLayerDiagnostics } = require("../core/layer-diagnostics");
+const { detectBackupCapability } = require("../core/backup-capability");
 const packageJson = require("../package.json");
 
 const router = express.Router();
@@ -112,8 +114,12 @@ function buildReadinessPayload(map) {
   const emailConfigured = mailProvider === "ses"
     ? Boolean(map.ses_region && map.ses_from && map.ses_access_key_id && map.ses_secret_access_key)
     : Boolean(map.smtp_host && map.smtp_port && map.smtp_from);
-  const backupScriptPath = path.resolve(__dirname, "..", "..", "scripts", "backup.sh");
-  const restoreScriptPath = path.resolve(__dirname, "..", "..", "scripts", "restore.sh");
+  const backup = detectBackupCapability({
+    rootDir: path.resolve(__dirname, ".."),
+    dataDir,
+    sqlitePath,
+    db
+  });
   const appUrlConfigured = Boolean(String(map.app_url || "").trim());
   const domainsConfigured = allowedDomains.length > 0;
   const developersConfigured = developerEmails.length > 0;
@@ -145,8 +151,10 @@ function buildReadinessPayload(map) {
       data_dir: dataDir,
       sqlite_path: sqlitePath,
       sqlite_exists: sqliteExists,
-      backup_script_available: fs.existsSync(backupScriptPath),
-      restore_script_available: fs.existsSync(restoreScriptPath),
+      backup_available: backup.available,
+      backup_method: backup.method,
+      backup_script_available: backup.backup_script_available,
+      restore_script_available: backup.restore_script_available,
       backup_restore_docs: "docs/skills/sqlite-backup-restore.md"
     },
     outbox: outboxWorkerService.getStats(),
@@ -184,8 +192,8 @@ function buildReadinessPayload(map) {
       },
       {
         key: "backup_restore",
-        status: fs.existsSync(backupScriptPath) && fs.existsSync(restoreScriptPath) ? "ready" : "needs_attention",
-        value: "scripts/backup.sh, scripts/restore.sh"
+        status: backup.available ? "ready" : "needs_attention",
+        value: backup.method
       }
     ]
   };
