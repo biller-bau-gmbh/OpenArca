@@ -98,6 +98,36 @@ If a layer genuinely needs a third-party package, it has to ship its own
 `node_modules` inside the mounted directory. The bundled example layer and the
 Enterprise layer both stick to built-ins.
 
+### Declare personal data
+
+If a layer stores anything about a person, it declares that surface so subject
+access and erasure can reach it. Core cannot guess at a layer's schema.
+
+```js
+// backend/extensions/personal-data.js
+module.exports = {
+  export({ db, subject }) {
+    return db.prepare('SELECT * FROM my_table WHERE user_id = ?').all(subject.id);
+  },
+  erase({ db, subject }) {
+    db.prepare('UPDATE my_table SET body = ? WHERE user_id = ?').run('[erased]', subject.id);
+    return { anonymised: true };
+  }
+};
+```
+
+Either function may be omitted, and a layer with no personal data omits the file
+entirely — requiring every layer to declare an empty module would be ceremony
+nobody keeps up to date.
+
+**Erasure runs layers first, then core.** Layer tables carry foreign keys into
+core, so clearing core's user row first could break them or cascade away rows the
+layer meant to anonymise itself.
+
+Prefer anonymising over deleting wherever a record has operational meaning. A
+ticket that vanishes takes its history with it, and the team still needs to know
+the work happened.
+
 ## 5. Extend the frontend
 
 ```jsx

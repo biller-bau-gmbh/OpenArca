@@ -4,6 +4,8 @@ const { createTicketService } = require("./services/ticketService");
 const { createWorkflowService } = require("./services/workflowService");
 const { createTaskSyncService } = require("./services/taskSyncService");
 const { customFieldsService } = require("../services/custom-fields");
+const personalData = require("./personal-data");
+const db = require("../db");
 
 // Service overrides compose from the lowest layer upward: a function override
 // receives the service as composed so far, not the pristine core one.
@@ -16,7 +18,8 @@ const SERVICE_NAMES = [
   "ticketService",
   "workflowService",
   "taskSyncService",
-  "customFieldsService"
+  "customFieldsService",
+  "personalDataService"
 ];
 const DEFAULT_OVERRIDES_FILE = extensionsOverridesFile;
 
@@ -25,7 +28,14 @@ function createCoreServices() {
     ticketService: createTicketService(),
     workflowService: createWorkflowService(),
     taskSyncService: createTaskSyncService(),
-    customFieldsService
+    customFieldsService,
+    // Subject access and erasure span core AND every layer, so the aggregation
+    // belongs in core while the policy around it — who may run it, what gets
+    // logged, how long data is kept — belongs to a compliance layer.
+    personalDataService: {
+      exportPersonalData: (options) => personalData.exportPersonalData({ db, ...options }),
+      erasePersonalData: (options) => personalData.erasePersonalData({ db, ...options })
+    }
   };
 }
 
