@@ -11,6 +11,7 @@ const { enterpriseCheckService } = require("../services/enterpriseCheck");
 const { domainEventsService } = require("../services/domain-events");
 const { outboxWorkerService } = require("../services/outbox-worker");
 const db = require("../db");
+const { normalizeLanguage } = require("../core/languages");
 const { dataDir, sqlitePath, uploadsDir } = require("../config");
 const {
   getSetting,
@@ -436,7 +437,7 @@ async function handleTestEmail(req, res) {
   try {
     const subject = "OpenArca email provider test";
     const text = "Email provider test message from OpenArca admin panel.";
-    const lang = req.user?.language === "en" ? "en" : "pl";
+    const lang = normalizeLanguage(req.user?.language);
     const result = await sendEmail({
       to: req.body.to,
       subject,
