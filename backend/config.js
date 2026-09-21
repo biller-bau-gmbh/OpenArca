@@ -1,4 +1,5 @@
 const path = require("path");
+const { resolveLayers } = require("./core/layer-resolver");
 
 const ROOT_DIR = __dirname;
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT_DIR, "data");
@@ -50,6 +51,19 @@ const EXTENSIONS_ROUTES_FILE = toAbsolutePath(
   process.env.EXTENSIONS_ROUTES_FILE || path.join(EXTENSIONS_DIR, "routes.js")
 );
 
+// Resolved at require time so a bad layer configuration aborts the boot instead
+// of surfacing later as a seam that quietly did nothing.
+// See docs/extensions/layer-contract.md.
+const { layers: EXTENSION_LAYERS, warnings: EXTENSION_LAYER_WARNINGS } = resolveLayers({
+  env: process.env,
+  rootDir: ROOT_DIR,
+  defaults: { extensionsDir: EXTENSIONS_DIR }
+});
+
+for (const warning of EXTENSION_LAYER_WARNINGS) {
+  console.warn(`[extensions] ${warning}`);
+}
+
 module.exports = {
   port: Number(process.env.PORT || 4000),
   jwtSecret: process.env.JWT_SECRET || "change-me-in-env",
@@ -62,6 +76,8 @@ module.exports = {
   extensionsDir: toAbsolutePath(ROOT_DIR, EXTENSIONS_DIR),
   extensionsOverridesFile: EXTENSIONS_OVERRIDES_FILE,
   extensionsRoutesFile: EXTENSIONS_ROUTES_FILE,
+  extensionLayers: EXTENSION_LAYERS,
+  extensionLayerWarnings: EXTENSION_LAYER_WARNINGS,
   outboxWorkerEnabled: toBoolean(process.env.OUTBOX_WORKER_ENABLED, false),
   outboxWorkerPollMs: toPositiveInt(process.env.OUTBOX_WORKER_POLL_MS, 5000),
   outboxWorkerBatchSize: toPositiveInt(process.env.OUTBOX_WORKER_BATCH_SIZE, 20),
