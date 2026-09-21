@@ -56,7 +56,8 @@ const createTicketSchema = z
     environment: z.string().min(10).max(2000).optional(),
     urgency_reporter: z.enum(TICKET_PRIORITIES).default("normal"),
     category: z.enum(TICKET_CATEGORIES).default("other"),
-    project_id: z.string().uuid().optional()
+    project_id: z.string().uuid().optional(),
+    custom_fields: z.record(z.string(), z.union([z.string(), z.number(), z.null()])).optional()
   })
   .strict()
   .superRefine((value, ctx) => {
@@ -154,6 +155,45 @@ function normalizeText(input) {
   return value.length ? value : undefined;
 }
 
+function createValidationError(message) {
+  const err = new Error(message);
+  err.status = 400;
+  err.code = "validation_error";
+  err.details = [{ path: "custom_fields", message, code: "custom" }];
+  return err;
+}
+
+// Ticket creation accepts multipart (attachments) as well as JSON, so a custom
+// field object arrives as a JSON string in the multipart case. A string that
+// does not parse is rejected rather than dropped: the caller believed it was
+// sending values.
+function normalizeCustomFields(input) {
+  if (input === undefined || input === null) return undefined;
+
+  if (typeof input === "object" && !Array.isArray(input)) {
+    return input;
+  }
+
+  if (typeof input === "string") {
+    const trimmed = input.trim();
+    if (!trimmed) return undefined;
+
+    let parsed;
+    try {
+      parsed = JSON.parse(trimmed);
+    } catch {
+      throw createValidationError("custom_fields must be a JSON object");
+    }
+
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      throw createValidationError("custom_fields must be a JSON object");
+    }
+    return parsed;
+  }
+
+  throw createValidationError("custom_fields must be a JSON object");
+}
+
 function parseCreateTicketBody(raw) {
   const normalized = {
     title: normalizeText(raw.title),
@@ -164,8 +204,13 @@ function parseCreateTicketBody(raw) {
     environment: normalizeText(raw.environment),
     urgency_reporter: normalizeText(raw.urgency_reporter) || "normal",
     category: normalizeText(raw.category) || "other",
-    project_id: normalizeText(raw.project_id)
+    project_id: normalizeText(raw.project_id),
+    custom_fields: normalizeCustomFields(raw.custom_fields)
   };
+
+  if (normalized.custom_fields === undefined) {
+    delete normalized.custom_fields;
+  }
 
   return createTicketSchema.parse(normalized);
 }

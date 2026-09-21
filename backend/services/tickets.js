@@ -1,6 +1,7 @@
 const db = require("../db");
 const { z } = require("zod");
 const { v4: uuidv4 } = require("uuid");
+const { createCustomFieldsService } = require("./custom-fields");
 const { TELEMETRY_EVENT_NAMES } = require("./telemetry");
 const { appendDomainEventToOutbox } = require("./domain-events");
 const { taskSyncService: defaultTaskSyncService } = require("./task-sync");
@@ -119,6 +120,7 @@ const TELEMETRY_USAGE_EVENT_CONFIG = [
 
 const developerPatchSchema = z
   .object({
+    custom_fields: z.record(z.string(), z.union([z.string(), z.number(), z.null()])).optional(),
     status: z.enum(TICKET_STATUSES).optional(),
     priority: z.enum(TICKET_PRIORITIES).optional(),
     planned_date: z.string().date().nullable().optional(),
@@ -142,6 +144,7 @@ const developerPatchSchema = z
 
 const userPatchSchema = z
   .object({
+    custom_fields: z.record(z.string(), z.union([z.string(), z.number(), z.null()])).optional(),
     title: z.string().min(10).max(300).optional(),
     description: z.string().min(50).max(20000).optional(),
     steps_to_reproduce: z.string().min(30).max(8000).optional(),
@@ -414,6 +417,9 @@ function buildBoardPayload(database) {
 
 function createTicketsService(options = {}) {
   const database = options.db || db;
+  // Bound to the SAME database handle, so writes join the caller's transaction.
+  const customFields =
+    options.customFieldsService || createCustomFieldsService({ db: database });
   const taskSyncService = options.taskSyncService || defaultTaskSyncService;
   const appendDomainEvent = options.appendDomainEventToOutbox || appendDomainEventToOutbox;
 
@@ -516,6 +522,14 @@ function createTicketsService(options = {}) {
           }
         }
 
+        // Inside the transaction: a ticket that saved but lost its required
+        // custom fields would pass validation it never actually satisfied.
+        customFields.setTicketValues({
+          ticketId,
+          projectId: payload.project_id || null,
+          submitted: payload.custom_fields
+        });
+
         appendDomainEvent({
           database,
           eventName: "ticket.created",
@@ -570,6 +584,21 @@ function createTicketsService(options = {}) {
           .get(payload.project_id);
         if (!project) {
           throw createServiceError("project_not_found", 400);
+        }
+      }
+
+      // Validated up front so a bad value fails before anything is written, and
+      // against the ticket's project after any project change in this payload.
+      const hasCustomFields = Object.prototype.hasOwnProperty.call(payload, "custom_fields");
+      if (hasCustomFields) {
+        customFields.setTicketValues({
+          ticketId,
+          projectId: payload.project_id ?? current.project_id ?? null,
+          submitted: payload.custom_fields
+        });
+        delete payload.custom_fields;
+        if (Object.keys(payload).length === 0) {
+          return this.getTicketDetail({ ticketId, user });
         }
       }
 
@@ -1117,7 +1146,8 @@ function createTicketsService(options = {}) {
         attachments,
         history,
         related_tickets: relatedTickets,
-        external_references: externalReferences
+        external_references: externalReferences,
+        custom_fields: customFields.getTicketValues({ ticketId: ticket.id })
       };
     },
 
