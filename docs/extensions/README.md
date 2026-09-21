@@ -88,6 +88,16 @@ Installers run after core's migration and after every lower layer's, so referenc
 
 Do not create tables lazily inside a route registrar. Registrars run in reverse order, so a layer above you may execute before you do.
 
+### Dependencies
+
+Use **Node built-ins and your own files only**. A layer is mounted outside the
+core application directory, so Node cannot resolve core's `node_modules` from it:
+`require("uuid")` in a layer fails at boot, while `require("node:crypto")` works.
+
+If a layer genuinely needs a third-party package, it has to ship its own
+`node_modules` inside the mounted directory. The bundled example layer and the
+Enterprise layer both stick to built-ins.
+
 ## 5. Extend the frontend
 
 ```jsx

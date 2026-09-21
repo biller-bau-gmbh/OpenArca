@@ -3,19 +3,29 @@ const { extensionsOverridesFile, extensionLayers } = require("../config");
 const { createTicketService } = require("./services/ticketService");
 const { createWorkflowService } = require("./services/workflowService");
 const { createTaskSyncService } = require("./services/taskSyncService");
+const { customFieldsService } = require("../services/custom-fields");
 
 // Service overrides compose from the lowest layer upward: a function override
 // receives the service as composed so far, not the pristine core one.
 // See docs/extensions/layer-contract.md.
 
-const SERVICE_NAMES = ["ticketService", "workflowService", "taskSyncService"];
+// Exposed to layers through getService(). A deployment layer configuring its own
+// custom fields must go through the validating service, not raw SQL against core
+// tables — otherwise it can store values the validation would have refused.
+const SERVICE_NAMES = [
+  "ticketService",
+  "workflowService",
+  "taskSyncService",
+  "customFieldsService"
+];
 const DEFAULT_OVERRIDES_FILE = extensionsOverridesFile;
 
 function createCoreServices() {
   return {
     ticketService: createTicketService(),
     workflowService: createWorkflowService(),
-    taskSyncService: createTaskSyncService()
+    taskSyncService: createTaskSyncService(),
+    customFieldsService
   };
 }
 
