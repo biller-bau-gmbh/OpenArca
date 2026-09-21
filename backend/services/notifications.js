@@ -2,6 +2,7 @@ const db = require("../db");
 const { sendEmail } = require("./email");
 const { STATUS_NOTIFICATION_KEYS } = require("../constants");
 const { getSetting } = require("./settings");
+const { canonicalOrigin } = require("../config");
 const { normalizeLanguage, translate } = require("../core/languages");
 
 function getUser(userId) {
@@ -26,8 +27,11 @@ function formatTicketNumber(number) {
   return `#${String(number).padStart(3, "0")}`;
 }
 
+// Deliberately canonical, not request-derived. A notification is triggered by
+// one person and delivered to another, and we do not record which host the
+// RECIPIENT uses — so the actor's host would be a guess about someone else.
 function getTicketUrl(ticketId) {
-  const appUrl = getSetting("app_url", "http://localhost:3330");
+  const appUrl = getSetting("app_url", canonicalOrigin);
   return `${appUrl.replace(/\/$/, "")}/ticket/${ticketId}`;
 }
 

@@ -1,5 +1,6 @@
 const path = require("path");
 const { resolveLayers } = require("./core/layer-resolver");
+const { resolveAllowedOrigins } = require("./core/hosts");
 
 const ROOT_DIR = __dirname;
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT_DIR, "data");
@@ -67,8 +68,17 @@ for (const warning of EXTENSION_LAYER_WARNINGS) {
   console.warn(`[extensions] ${warning}`);
 }
 
+// The first entry is canonical: what links fall back to when a request cannot be
+// attributed to an allowed host. See docs/multi-host.md.
+const ALLOWED_ORIGINS = resolveAllowedOrigins({
+  env: process.env,
+  fallback: "http://localhost:3330"
+});
+
 module.exports = {
   port: Number(process.env.PORT || 4000),
+  allowedOrigins: ALLOWED_ORIGINS,
+  canonicalOrigin: ALLOWED_ORIGINS[0] || "http://localhost:3330",
   jwtSecret: process.env.JWT_SECRET || "change-me-in-env",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "30d",
   appUrl: process.env.APP_URL || "http://localhost:3330",

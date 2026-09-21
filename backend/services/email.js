@@ -55,9 +55,10 @@ function getLogoUrl(settings, appUrl) {
   return getDefaultLogoDataUri();
 }
 
-function buildEmailHtml({ subject, text, html, settings, lang }) {
+function buildEmailHtml({ subject, text, html, settings, lang, origin }) {
   const appName = String(settings.app_name || "OpenArca").trim() || "OpenArca";
-  const appUrl = String(settings.app_url || "http://localhost:3330").replace(/\/$/, "");
+  // The host the recipient actually used, when we know it.
+  const appUrl = String(origin || settings.app_url || "http://localhost:3330").replace(/\/$/, "");
   const notificationsUrl = `${appUrl}/profile#notifications`;
   const logoUrl = getLogoUrl(settings, appUrl);
   const safeSubject = escapeHtml(subject || appName);
@@ -205,7 +206,7 @@ async function sendWithSes(settings, { to, subject, text, html }) {
   return { delivered: true, mode: "ses" };
 }
 
-async function sendEmail({ to, subject, text, html, lang }) {
+async function sendEmail({ to, subject, text, html, lang, origin }) {
   const settings = getSettingsMap([
     "app_name",
     "app_url",
@@ -230,7 +231,8 @@ async function sendEmail({ to, subject, text, html, lang }) {
     text,
     html,
     settings,
-    lang: normalizedLang
+    lang: normalizedLang,
+    origin
   });
 
   const provider = getEmailProvider(settings);
@@ -247,5 +249,6 @@ async function sendEmail({ to, subject, text, html, lang }) {
 }
 
 module.exports = {
-  sendEmail
+  sendEmail,
+  buildEmailHtml
 };

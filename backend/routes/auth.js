@@ -155,7 +155,9 @@ router.post(
         it: `Il tuo codice OTP è: ${code}. Scade tra 10 minuti.`
       });
 
-      await sendEmail({ to: email, subject, text, lang });
+      // The requester IS the recipient here, so the host they used is the right
+      // one to link back to.
+      await sendEmail({ to: email, subject, text, lang, origin: req.resolvedOrigin });
 
       return res.json({ success: true });
     } catch (error) {
