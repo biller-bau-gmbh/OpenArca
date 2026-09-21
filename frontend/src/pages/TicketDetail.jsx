@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ticketDetailSections } from "virtual:openarca-extensions";
 import {
   addExternalReference,
   addRelatedTicket,
@@ -824,6 +825,11 @@ export default function TicketDetailPage() {
               </form>
             ) : null}
           </article>
+
+          {ticketDetailSections.map((section) => {
+            const Component = section.component;
+            return Component ? <Component key={section.key} ticket={ticket} /> : null;
+          })}
 
           <article className="card">
             <h2 className="card-title">{t("tickets.customFields")}</h2>

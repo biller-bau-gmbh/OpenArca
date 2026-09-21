@@ -57,7 +57,10 @@ const SLOT_NAMES = [
   "enterpriseBaseItems",
   "enterpriseNavSections",
   "enterpriseRoutes",
-  "enterpriseProfileNotificationSections"
+  "enterpriseProfileNotificationSections",
+  // Sections rendered on the ticket detail page. A layer contributing here gets
+  // the ticket and renders its own card; core does not know what it draws.
+  "ticketDetailSections"
 ];
 
 // Generates an aggregator module importing every layer's entry and merging the
