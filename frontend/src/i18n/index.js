@@ -3,12 +3,13 @@ import { initReactI18next } from "react-i18next";
 import pl from "./pl.json";
 import en from "./en.json";
 import it from "./it.json";
+import de from "./de.json";
 import config from "./languages.json";
 import { getStoredValue } from "../utils/storage";
 
 // languages.json is the single source of truth, shared with the i18n guard, so
 // the guard and the runtime cannot disagree about which languages exist.
-const dictionaries = { pl, en, it };
+const dictionaries = { pl, en, it, de };
 
 export const SUPPORTED_LANGUAGES = config.languages;
 export const DEFAULT_LANGUAGE = config.fallback;

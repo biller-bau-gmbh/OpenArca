@@ -1,7 +1,7 @@
 {
   "reference": "en",
-  "fallback": "pl",
-  "languages": ["pl", "en", "it"],
+  "fallback": "de",
+  "languages": ["pl", "en", "it", "de"],
   "foreignCharacters": {
     "en": {
       "pattern": "[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]",

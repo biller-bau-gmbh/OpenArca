@@ -147,12 +147,14 @@ router.post(
       const subject = translate(lang, {
         pl: "Twój kod logowania",
         en: "Your login code",
-        it: "Il tuo codice di accesso"
+        it: "Il tuo codice di accesso",
+	de: "Dein Login-Code",
       });
       const text = translate(lang, {
         pl: `Twój kod OTP to: ${code}. Kod wygasa za 10 minut.`,
         en: `Your OTP code is: ${code}. It expires in 10 minutes.`,
-        it: `Il tuo codice OTP è: ${code}. Scade tra 10 minuti.`
+        it: `Il tuo codice OTP è: ${code}. Scade tra 10 minuti.`,
+	de: `Der Code lautet: ${code}. Er ist 10 Minuten gültig.`,
       });
 
       // The requester IS the recipient here, so the host they used is the right
