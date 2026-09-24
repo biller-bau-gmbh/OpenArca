@@ -36,7 +36,7 @@ services:
     # Loopback only. Exposing container ports publicly was a real incident on
     # the host this was first deployed to; the reverse proxy is the only way in.
     ports:
-      - "127.0.0.1:${BACKEND_PORT:-4000}:4000"
+      - "10.1.1.2:${BACKEND_PORT:-3331}:4000"
     volumes:
       - backend_data:/app/data
       - backend_uploads:/app/uploads
@@ -58,7 +58,7 @@ services:
     container_name: openarca-frontend
     restart: unless-stopped
     ports:
-      - "127.0.0.1:${FRONTEND_PORT:-3330}:3330"
+      - "10.1.1.2:${FRONTEND_PORT:-3330}:3330"
     depends_on:
       backend:
         condition: service_healthy
@@ -70,7 +70,6 @@ services:
         max-file: "3"
 
 volumes:
-  # Named, not a bind mount into the deploy directory: a redeploy that replaces
-  # that directory would take the database with it.
   backend_data:
   backend_uploads:
+
